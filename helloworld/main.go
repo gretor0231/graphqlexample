@@ -11,4 +11,5 @@ func foo() {
 	for i := 0; i < 10; i++ {
 		fmt.Println("testagain")
 	}
+	print("hihihi")
 }
