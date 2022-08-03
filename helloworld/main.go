@@ -4,10 +4,7 @@ import "fmt"
 
 func main() {
 
-	x := []int{4, 5, 6, 7, 8, 12}
-
-	for i, v := range x {
-		fmt.Println(i, v)
-	}
-
+	var a int = 15
+	a = 10
+	fmt.Println(a)
 }
