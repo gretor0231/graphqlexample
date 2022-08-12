@@ -3,8 +3,11 @@ package main
 import "fmt"
 
 func main() {
+	fmt.Println(bar()(42))
+}
 
-	var a int = 15
-	a = 10
-	fmt.Println(a)
+func bar() func(x int) int {
+	return func(x int) int {
+		return x
+	}
 }
