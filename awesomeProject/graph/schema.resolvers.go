@@ -6,10 +6,46 @@ package graph
 
 import (
 	"awesomeProject/graph/model"
+	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
 )
+
+// CreateBook is the resolver for the createBook field.
+func (r *mutationResolver) CreateBook(
+	ctx context.Context, title string, author string, published string,
+) (*model.Book, error) {
+	// Create a new Book object with the specified fields
+	newBook := model.Book{
+		Title:     title,
+		Author:    author,
+		Published: published,
+	}
+
+	// Convert the Book object to JSON
+	jsonData, err := json.Marshal(newBook)
+	if err != nil {
+		return nil, err
+	}
+
+	// Send a POST request to the REST API with the JSON data
+	resp, err := http.Post("http://localhost:3000/books", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Decode the response JSON into a new Book object
+	var createdBook model.Book
+	err = json.NewDecoder(resp.Body).Decode(&createdBook)
+	if err != nil {
+		return nil, err
+	}
+
+	// Return the newly created book
+	return &createdBook, nil
+}
 
 // Books is the resolver for the books field.
 func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
@@ -35,7 +71,11 @@ func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
 	return books, nil
 }
 
+// Mutation returns MutationResolver implementation.
+func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
