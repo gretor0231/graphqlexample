@@ -9,12 +9,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 // CreateBook is the resolver for the createBook field.
-func (r *mutationResolver) CreateBook(ctx context.Context, title string, author string, published string) (*model.Book, error) {
+func (r *mutationResolver) CreateBook(ctx context.Context, title string, author string, published string) (
+	*model.Book, error,
+) {
 	// Create a new Book object with the specified fields
 	newBook := model.Book{
 		Title:     title,
@@ -47,7 +48,9 @@ func (r *mutationResolver) CreateBook(ctx context.Context, title string, author 
 }
 
 // CreateStudent is the resolver for the createStudent field.
-func (r *mutationResolver) CreateStudent(ctx context.Context, firstname string, lastname string, age int) (*model.Student, error) {
+func (r *mutationResolver) CreateStudent(
+	ctx context.Context, firstname string, lastname string, age int,
+) (*model.Student, error) {
 	// Create a new Book object with the specified fields
 	newStudent := model.Student{
 		Firstname: firstname,
@@ -127,7 +130,52 @@ func (r *queryResolver) Students(ctx context.Context) ([]*model.Student, error) 
 
 // StudentWithBook is the resolver for the studentWithBook field.
 func (r *queryResolver) StudentWithBook(ctx context.Context) ([]*model.StudentWithBook, error) {
-	panic(fmt.Errorf("not implemented: StudentWithBook - studentWithBook"))
+
+	// Define the URLs for the two REST APIs you want to call
+	url1 := "http://localhost:3000/books"
+	url2 := "http://localhost:3000/students"
+
+	// Create an HTTP client to make requests to the first API
+	client1 := &http.Client{}
+	req1, err := http.NewRequest("GET", url1, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp1, err := client1.Do(req1)
+	if err != nil {
+		return nil, err
+	}
+	defer resp1.Body.Close()
+
+	// Create an HTTP client to make requests to the second API
+	client2 := &http.Client{}
+	req2, err := http.NewRequest("GET", url2, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp2, err := client2.Do(req2)
+	if err != nil {
+		return nil, err
+	}
+	defer resp2.Body.Close()
+
+	// Parse the response from the first API into a []*model.Result
+	var results1 []*model.StudentWithBook
+	err = json.NewDecoder(resp1.Body).Decode(&results1)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the response from the second API into a []*model.Result
+	var results2 []*model.StudentWithBook
+	err = json.NewDecoder(resp2.Body).Decode(&results2)
+	if err != nil {
+		return nil, err
+	}
+	// Combine the results from both APIs into a single []*model.Result
+	combinedResults := append(results1, results2...)
+
+	return combinedResults, nil
 }
 
 // Mutation returns MutationResolver implementation.
