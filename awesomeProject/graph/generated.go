@@ -58,8 +58,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Books    func(childComplexity int) int
-		Students func(childComplexity int) int
+		Books           func(childComplexity int) int
+		StudentWithBook func(childComplexity int) int
+		Students        func(childComplexity int) int
 	}
 
 	Student struct {
@@ -67,6 +68,11 @@ type ComplexityRoot struct {
 		Firstname func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Lastname  func(childComplexity int) int
+	}
+
+	StudentWithBook struct {
+		Books    func(childComplexity int) int
+		Students func(childComplexity int) int
 	}
 }
 
@@ -77,6 +83,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Books(ctx context.Context) ([]*model.Book, error)
 	Students(ctx context.Context) ([]*model.Student, error)
+	StudentWithBook(ctx context.Context) ([]*model.StudentWithBook, error)
 }
 
 type executableSchema struct {
@@ -153,6 +160,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Books(childComplexity), true
 
+	case "Query.studentWithBook":
+		if e.complexity.Query.StudentWithBook == nil {
+			break
+		}
+
+		return e.complexity.Query.StudentWithBook(childComplexity), true
+
 	case "Query.students":
 		if e.complexity.Query.Students == nil {
 			break
@@ -187,6 +201,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Student.Lastname(childComplexity), true
+
+	case "StudentWithBook.books":
+		if e.complexity.StudentWithBook.Books == nil {
+			break
+		}
+
+		return e.complexity.StudentWithBook.Books(childComplexity), true
+
+	case "StudentWithBook.students":
+		if e.complexity.StudentWithBook.Students == nil {
+			break
+		}
+
+		return e.complexity.StudentWithBook.Students(childComplexity), true
 
 	}
 	return 0, false
@@ -807,6 +835,56 @@ func (ec *executionContext) fieldContext_Query_students(ctx context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_studentWithBook(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_studentWithBook(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().StudentWithBook(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.StudentWithBook)
+	fc.Result = res
+	return ec.marshalNStudentWithBook2ᚕᚖawesomeProjectᚋgraphᚋmodelᚐStudentWithBookᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_studentWithBook(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "books":
+				return ec.fieldContext_StudentWithBook_books(ctx, field)
+			case "students":
+				return ec.fieldContext_StudentWithBook_students(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type StudentWithBook", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -1107,6 +1185,114 @@ func (ec *executionContext) fieldContext_Student_age(ctx context.Context, field 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _StudentWithBook_books(ctx context.Context, field graphql.CollectedField, obj *model.StudentWithBook) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_StudentWithBook_books(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Books, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Book)
+	fc.Result = res
+	return ec.marshalNBook2ᚕᚖawesomeProjectᚋgraphᚋmodelᚐBookᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_StudentWithBook_books(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StudentWithBook",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Book_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Book_title(ctx, field)
+			case "author":
+				return ec.fieldContext_Book_author(ctx, field)
+			case "published":
+				return ec.fieldContext_Book_published(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Book", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _StudentWithBook_students(ctx context.Context, field graphql.CollectedField, obj *model.StudentWithBook) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_StudentWithBook_students(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Students, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Student)
+	fc.Result = res
+	return ec.marshalNStudent2ᚕᚖawesomeProjectᚋgraphᚋmodelᚐStudentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_StudentWithBook_students(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StudentWithBook",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Student_id(ctx, field)
+			case "firstname":
+				return ec.fieldContext_Student_firstname(ctx, field)
+			case "lastname":
+				return ec.fieldContext_Student_lastname(ctx, field)
+			case "age":
+				return ec.fieldContext_Student_age(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Student", field.Name)
 		},
 	}
 	return fc, nil
@@ -3055,6 +3241,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "studentWithBook":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_studentWithBook(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "__type":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -3112,6 +3321,41 @@ func (ec *executionContext) _Student(ctx context.Context, sel ast.SelectionSet, 
 		case "age":
 
 			out.Values[i] = ec._Student_age(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var studentWithBookImplementors = []string{"StudentWithBook"}
+
+func (ec *executionContext) _StudentWithBook(ctx context.Context, sel ast.SelectionSet, obj *model.StudentWithBook) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, studentWithBookImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("StudentWithBook")
+		case "books":
+
+			out.Values[i] = ec._StudentWithBook_books(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "students":
+
+			out.Values[i] = ec._StudentWithBook_students(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -3619,6 +3863,60 @@ func (ec *executionContext) marshalNStudent2ᚖawesomeProjectᚋgraphᚋmodelᚐ
 		return graphql.Null
 	}
 	return ec._Student(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNStudentWithBook2ᚕᚖawesomeProjectᚋgraphᚋmodelᚐStudentWithBookᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudentWithBook) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNStudentWithBook2ᚖawesomeProjectᚋgraphᚋmodelᚐStudentWithBook(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNStudentWithBook2ᚖawesomeProjectᚋgraphᚋmodelᚐStudentWithBook(ctx context.Context, sel ast.SelectionSet, v *model.StudentWithBook) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._StudentWithBook(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

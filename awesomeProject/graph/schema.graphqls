@@ -1,6 +1,7 @@
 type Query {
   books: [Book!]!
   students: [Student!]!
+  studentWithBook: [StudentWithBook!]!
 }
 
 type Mutation {
@@ -24,4 +25,9 @@ type Student {
   firstname: String!
   lastname: String!
   age: Int!
+}
+
+type StudentWithBook{
+  books: [Book!]!
+  students: [Student!]!
 }

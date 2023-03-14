@@ -15,3 +15,8 @@ type Student struct {
 	Lastname  string `json:"lastname"`
 	Age       int    `json:"age"`
 }
+
+type StudentWithBook struct {
+	Books    []*Book    `json:"books"`
+	Students []*Student `json:"students"`
+}
