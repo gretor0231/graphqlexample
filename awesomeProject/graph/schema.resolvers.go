@@ -9,13 +9,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
 // CreateBook is the resolver for the createBook field.
-func (r *mutationResolver) CreateBook(
-	ctx context.Context, title string, author string, published string,
-) (*model.Book, error) {
+func (r *mutationResolver) CreateBook(ctx context.Context, title string, author string, published string) (*model.Book, error) {
 	// Create a new Book object with the specified fields
 	newBook := model.Book{
 		Title:     title,
@@ -47,6 +46,11 @@ func (r *mutationResolver) CreateBook(
 	return &createdBook, nil
 }
 
+// CreateStudent is the resolver for the createStudent field.
+func (r *mutationResolver) CreateStudent(ctx context.Context, firstname string, lastname string, age int) (*model.Student, error) {
+	panic(fmt.Errorf("not implemented: CreateStudent - createStudent"))
+}
+
 // Books is the resolver for the books field.
 func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
 	client := &http.Client{}
@@ -69,6 +73,11 @@ func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
 	}
 
 	return books, nil
+}
+
+// Students is the resolver for the students field.
+func (r *queryResolver) Students(ctx context.Context) ([]*model.Student, error) {
+	panic(fmt.Errorf("not implemented: Students - students"))
 }
 
 // Mutation returns MutationResolver implementation.

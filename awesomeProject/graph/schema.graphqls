@@ -1,9 +1,15 @@
 type Query {
   books: [Book!]!
+  students: [Student!]!
 }
 
 type Mutation {
   createBook(title: String!, author: String!, published: String!): Book!
+  createStudent(
+    firstname: String!
+    lastname: String!
+    age: Int!
+  ): Student!
 }
 
 type Book {
@@ -11,4 +17,11 @@ type Book {
   title: String!
   author: String!
   published: String!
+}
+
+type Student {
+  id: ID!
+  firstname: String!
+  lastname: String!
+  age: Int!
 }
