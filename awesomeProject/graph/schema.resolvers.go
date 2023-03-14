@@ -9,12 +9,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 // CreateBook is the resolver for the createBook field.
-func (r *mutationResolver) CreateBook(ctx context.Context, title string, author string, published string) (*model.Book, error) {
+func (r *mutationResolver) CreateBook(ctx context.Context, title string, author string, published string) (
+	*model.Book, error,
+) {
 	// Create a new Book object with the specified fields
 	newBook := model.Book{
 		Title:     title,
@@ -47,8 +48,39 @@ func (r *mutationResolver) CreateBook(ctx context.Context, title string, author 
 }
 
 // CreateStudent is the resolver for the createStudent field.
-func (r *mutationResolver) CreateStudent(ctx context.Context, firstname string, lastname string, age int) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: CreateStudent - createStudent"))
+func (r *mutationResolver) CreateStudent(
+	ctx context.Context, firstname string, lastname string, age int,
+) (*model.Student, error) {
+	// Create a new Book object with the specified fields
+	newStudent := model.Student{
+		Firstname: firstname,
+		Lastname:  lastname,
+		Age:       age,
+	}
+
+	// Convert the Book object to JSON
+	jsonData, err := json.Marshal(newStudent)
+	if err != nil {
+		return nil, err
+	}
+
+	// Send a POST request to the REST API with the JSON data
+	resp, err := http.Post("http://localhost:3000/students", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Decode the response JSON into a new Book object
+	var createdStudent model.Student
+	err = json.NewDecoder(resp.Body).Decode(&createdStudent)
+	if err != nil {
+		return nil, err
+	}
+
+	// Return the newly created book
+	return &createdStudent, nil
+
 }
 
 // Books is the resolver for the books field.
@@ -71,13 +103,30 @@ func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return books, nil
 }
 
 // Students is the resolver for the students field.
 func (r *queryResolver) Students(ctx context.Context) ([]*model.Student, error) {
-	panic(fmt.Errorf("not implemented: Students - students"))
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", "http://localhost:3000/students", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var students []*model.Student
+
+	err = json.NewDecoder(resp.Body).Decode(&students)
+	if err != nil {
+		return nil, err
+	}
+	return students, nil
 }
 
 // Mutation returns MutationResolver implementation.

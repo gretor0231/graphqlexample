@@ -48,5 +48,25 @@
       "author": "John Doe",
       "published": "2022-01-01"
     }
+  ],
+  "students": [
+    {
+      "id": "123",
+      "firstname": "Alice",
+      "lastname": "Smith",
+      "age": 20
+    },
+    {
+      "id": "456",
+      "firstname": "Bob",
+      "lastname": "Johnson",
+      "age": 22
+    },
+    {
+      "id": "789",
+      "firstname": "Charlie",
+      "lastname": "Brown",
+      "age": 21
+    }
   ]
 }
