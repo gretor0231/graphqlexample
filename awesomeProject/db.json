@@ -47,6 +47,12 @@
       "title": "My Book",
       "author": "John Doe",
       "published": "2022-01-01"
+    },
+    {
+      "id": "8W3B0Ti",
+      "title": "My Book",
+      "author": "John Doe",
+      "published": "2022-01-01"
     }
   ],
   "students": [

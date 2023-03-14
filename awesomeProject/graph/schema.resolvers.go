@@ -159,21 +159,23 @@ func (r *queryResolver) StudentWithBook(ctx context.Context) ([]*model.StudentWi
 	}
 	defer resp2.Body.Close()
 
-	// Parse the response from the first API into a []*model.Result
-	var results1 []*model.StudentWithBook
+	var results1 []*model.Book
 	err = json.NewDecoder(resp1.Body).Decode(&results1)
 	if err != nil {
 		return nil, err
 	}
 
-	// Parse the response from the second API into a []*model.Result
-	var results2 []*model.StudentWithBook
+	var results2 []*model.Student
 	err = json.NewDecoder(resp2.Body).Decode(&results2)
 	if err != nil {
 		return nil, err
 	}
-	// Combine the results from both APIs into a single []*model.Result
-	combinedResults := append(results1, results2...)
+	finalResult := model.StudentWithBook{
+		results1, results2,
+	}
+	combinedResults := []*model.StudentWithBook{
+		&finalResult,
+	}
 
 	return combinedResults, nil
 }
